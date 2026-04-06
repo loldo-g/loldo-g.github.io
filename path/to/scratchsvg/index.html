@@ -1,5 +1,581 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Path to Scratch SVG | Conversor simples</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #e9eef3;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #1a2c3e;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .header {
+            background: #fef6e8;
+            padding: 1.8rem 2rem;
+            border-bottom: 2px solid #ffdec2;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            background: linear-gradient(120deg, #d95b1a, #ff8c42);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .header p {
+            color: #4a5b6e;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .badge-human {
+            display: inline-block;
+            background: #ffdec2;
+            border-radius: 40px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #b45a2b;
+            margin-left: 0.75rem;
+            vertical-align: middle;
+        }
+
+        .flex-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+            padding: 2rem;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 280px;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #edeff2;
+            transition: all 0.2s;
+        }
+
+        .card-header {
+            padding: 1.2rem 1.5rem 0.2rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+            border-bottom: 2px dotted #f0e2d4;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            background: #fefcf8;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            resize: vertical;
+            line-height: 1.45;
+            color: #1e2f3c;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ff9f5b;
+            box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.15);
+        }
+
+        .preview-box {
+            background: #faf9f7;
+            border-radius: 1.2rem;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1rem 0 1.2rem;
+            border: 1px solid #efe3d6;
+        }
+
+        .svg-preview-wrap {
+            background: white;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            display: inline-flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .svg-preview-wrap svg {
+            max-width: 100%;
+            max-height: 190px;
+            width: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .code-block {
+            background: #f2f4f8;
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.75rem;
+            word-break: break-all;
+            white-space: pre-wrap;
+            border: 1px solid #e0e6ed;
+            margin: 0.8rem 0 1rem;
+            max-height: 180px;
+            overflow: auto;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1.2rem 0 0.8rem;
+        }
+
+        button {
+            background: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.15s;
+            font-family: inherit;
+            border: 1px solid #cfdee9;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-convert {
+            background: #ff8c42;
+            border-color: #e07a36;
+            color: white;
+            box-shadow: 0 2px 6px rgba(255, 140, 66, 0.2);
+        }
+
+        .btn-convert:hover {
+            background: #f0762c;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-dark {
+            background: #2c5f8a;
+            border-color: #1f4f73;
+            color: white;
+        }
+
+        .btn-outline-dark:hover {
+            background: #1f4e72;
+        }
+
+        .btn-soft {
+            background: #f1f3f7;
+            border-color: #dce3ec;
+            color: #2c5f8a;
+        }
+
+        .btn-soft:hover {
+            background: #e6ecf3;
+        }
+
+        .status-message {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            padding: 0.7rem 1rem;
+            border-radius: 1.2rem;
+            background: #f1f3f6;
+            color: #2b4f6c;
+            font-weight: 450;
+        }
+
+        .status-error {
+            background: #ffe6e2;
+            color: #bc3f00;
+            border-left: 4px solid #ff6b4a;
+        }
+
+        .status-success {
+            background: #e1f7ea;
+            color: #1f6e3f;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .footer-note {
+            background: #fefaf5;
+            padding: 1rem 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #6a7f96;
+            border-top: 1px solid #ffe1c4;
+        }
+
+        @media (max-width: 750px) {
+            body {
+                padding: 1rem;
+            }
+            .flex-grid {
+                padding: 1rem;
+            }
+            .card-body {
+                padding: 0 1rem 1rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>✧  Path → Scratch SVG  ✧ <span class="badge-human">feito à mão</span></h1>
+        <p>Cole o puro <strong>d=" ... "</strong> do seu path e ganhe um SVG pronto para o editor de fantasias do Scratch</p>
+    </div>
+
+    <div class="flex-grid">
+        <!-- lado esquerdo: entrada -->
+        <div class="card">
+            <div class="card-header">
+                <span>📐</span> 1. O path do seu desenho
+            </div>
+            <div class="card-body">
+                <textarea id="pathData" rows="5" placeholder='Exemplo: M20 20 L 180 20 L 100 160 Z&#10;&#10;ou um coração:&#10;M100 30 C 40 10, 10 70, 100 130 C 190 70, 160 10, 100 30 Z'></textarea>
+                <div class="button-row">
+                    <button id="convertAction" class="btn-convert">✨ Converter para SVG</button>
+                    <button id="clearFields" class="btn-soft">🗑️ Limpar</button>
+                    <button id="loadExample" class="btn-soft">⭐ Exemplo estrela</button>
+                </div>
+                <div id="liveStatus" class="status-message">💬 Cole um path válido e clique em converter.</div>
+            </div>
+        </div>
+
+        <!-- lado direito: preview + resultado -->
+        <div class="card">
+            <div class="card-header">
+                <span>🖌️</span> 2. Visualização
+            </div>
+            <div class="card-body">
+                <div class="preview-box">
+                    <div class="svg-preview-wrap" id="previewArea">
+                        <svg id="dynamicPreview" width="180" height="180" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="200" height="200" fill="#f9f5f0" rx="16" ry="16" />
+                            <text x="100" y="105" font-size="12" text-anchor="middle" fill="#b2967c" font-family="monospace">nenhum path</text>
+                            <text x="100" y="125" font-size="11" text-anchor="middle" fill="#b2967c">预览 aparecerá aqui</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="card-header" style="padding-left: 0; border-bottom: none; margin-bottom: 0;">
+                    <span>📦</span> 3. Código SVG (Scratch)
+                </div>
+                <div class="code-block" id="svgResultBlock">
+                    <code id="finalSvgCode">Nenhum SVG gerado ainda</code>
+                </div>
+                <div class="button-row">
+                    <button id="copySvgBtn" class="btn-outline-dark" disabled>📋 Copiar código</button>
+                    <button id="downloadSvgBtn" class="btn-outline-dark" disabled>⬇️ Baixar .svg</button>
+                </div>
+                <div style="font-size: 0.7rem; margin-top: 0.8rem; background: #faf3eb; border-radius: 1rem; padding: 0.5rem 0.8rem; color: #75563b;">
+                    🧩 O SVG já vem com cor laranja (#FF8C42) e contorno suave, próprio para arrastar direto no Scratch.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-note">
+        💡 Basta copiar o valor do atributo <code>d="..."</code> de qualquer SVG. O conversor gera um arquivo .svg compatível com fantasias do Scratch 3.0.
+    </div>
+</div>
+
 <script>
-const nothing = "PCFkb2N0eXBlaHRtbD48aHRtbCBsYW5nPWVuPjxtZXRhIGNoYXJzZXQ9VVRGLTg+PG1ldGEgY29udGVudD0id2lkdGg9ZGV2aWNlLXdpZHRoLGluaXRpYWwtc2NhbGU9MSx1c2VyLXNjYWxhYmxlPXllcyJuYW1lPXZpZXdwb3J0Pjx0aXRsZT5QYXRoIHRvIFNjcmF0Y2ggU1ZHIHwgQ29udmVyc29yIHNpbXBsZXM8L3RpdGxlPjxzdHlsZT4qe21hcmdpbjowO3BhZGRpbmc6MDtib3gtc2l6aW5nOmJvcmRlci1ib3h9Ym9keXtiYWNrZ3JvdW5kOiNlOWVlZjM7Zm9udC1mYW1pbHk6c3lzdGVtLXVpLCdTZWdvZSBVSScsUm9ib3RvLCdIZWx2ZXRpY2EgTmV1ZScsc2Fucy1zZXJpZjtwYWRkaW5nOjJyZW0gMS41cmVtO2NvbG9yOiMxYTJjM2V9LmNvbnRhaW5lcnttYXgtd2lkdGg6MTMwMHB4O21hcmdpbjowIGF1dG87YmFja2dyb3VuZDojZmZmO2JvcmRlci1yYWRpdXM6MnJlbTtib3gtc2hhZG93OjAgMjBweCAzNXB4IC0xMnB4IHJnYmEoMCwwLDAsLjEpO292ZXJmbG93OmhpZGRlbjt0cmFuc2l0aW9uOmFsbCAuMnN9LmhlYWRlcntiYWNrZ3JvdW5kOiNmZWY2ZTg7cGFkZGluZzoxLjhyZW0gMnJlbTtib3JkZXItYm90dG9tOjJweCBzb2xpZCAjZmZkZWMyfS5oZWFkZXIgaDF7Zm9udC1zaXplOjJyZW07Zm9udC13ZWlnaHQ6NjAwO2JhY2tncm91bmQ6bGluZWFyLWdyYWRpZW50KDEyMGRlZywjZDk1YjFhLCNmZjhjNDIpO2JhY2tncm91bmQtY2xpcDp0ZXh0Oy13ZWJraXQtYmFja2dyb3VuZC1jbGlwOnRleHQ7Y29sb3I6dHJhbnNwYXJlbnQ7bGV0dGVyLXNwYWNpbmc6LS4zcHh9LmhlYWRlciBwe2NvbG9yOiM0YTViNmU7bWFyZ2luLXRvcDouNXJlbTtmb250LXNpemU6MXJlbX0uYmFkZ2UtaHVtYW57ZGlzcGxheTppbmxpbmUtYmxvY2s7YmFja2dyb3VuZDojZmZkZWMyO2JvcmRlci1yYWRpdXM6NDBweDtwYWRkaW5nOi4ycmVtIC44cmVtO2ZvbnQtc2l6ZTouNzVyZW07Zm9udC13ZWlnaHQ6NTAwO2NvbG9yOiNiNDVhMmI7bWFyZ2luLWxlZnQ6Ljc1cmVtO3ZlcnRpY2FsLWFsaWduOm1pZGRsZX0uZmxleC1ncmlke2Rpc3BsYXk6ZmxleDtmbGV4LXdyYXA6d3JhcDtnYXA6MS44cmVtO3BhZGRpbmc6MnJlbX0uY2FyZHtmbGV4OjE7bWluLXdpZHRoOjI4MHB4O2JhY2tncm91bmQ6I2ZmZjtib3JkZXItcmFkaXVzOjEuNXJlbTtib3gtc2hhZG93OjAgNHB4IDEycHggcmdiYSgwLDAsMCwuMDMpO2JvcmRlcjoxcHggc29saWQgI2VkZWZmMjt0cmFuc2l0aW9uOmFsbCAuMnN9LmNhcmQtaGVhZGVye3BhZGRpbmc6MS4ycmVtIDEuNXJlbSAuMnJlbSAxLjVyZW07Zm9udC13ZWlnaHQ6NjAwO2ZvbnQtc2l6ZToxLjI1cmVtO2JvcmRlci1ib3R0b206MnB4IGRvdHRlZCAjZjBlMmQ0O21hcmdpbi1ib3R0b206LjhyZW07ZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6LjVyZW19LmNhcmQtYm9keXtwYWRkaW5nOjAgMS41cmVtIDEuNXJlbSAxLjVyZW19dGV4dGFyZWF7d2lkdGg6MTAwJTtmb250LWZhbWlseTonU0YgTW9ubycsJ0ZpcmEgQ29kZScsbW9ub3NwYWNlO2ZvbnQtc2l6ZTouODVyZW07YmFja2dyb3VuZDojZmVmY2Y4O2JvcmRlcjoxLjVweCBzb2xpZCAjZTJlOGYwO2JvcmRlci1yYWRpdXM6MS4ycmVtO3BhZGRpbmc6MXJlbSAxLjJyZW07cmVzaXplOnZlcnRpY2FsO2xpbmUtaGVpZ2h0OjEuNDU7Y29sb3I6IzFlMmYzY310ZXh0YXJlYTpmb2N1c3tvdXRsaW5lOjA7Ym9yZGVyLWNvbG9yOiNmZjlmNWI7Ym94LXNoYWRvdzowIDAgMCAzcHggcmdiYSgyNTUsMTQwLDY2LC4xNSl9LnByZXZpZXctYm94e2JhY2tncm91bmQ6I2ZhZjlmNztib3JkZXItcmFkaXVzOjEuMnJlbTtwYWRkaW5nOjEuNXJlbTt0ZXh0LWFsaWduOmNlbnRlcjttYXJnaW46MXJlbSAwIDEuMnJlbTtib3JkZXI6MXB4IHNvbGlkICNlZmUzZDZ9LnN2Zy1wcmV2aWV3LXdyYXB7YmFja2dyb3VuZDojZmZmO2JvcmRlci1yYWRpdXM6MXJlbTtwYWRkaW5nOi44cmVtO2Rpc3BsYXk6aW5saW5lLWZsZXg7anVzdGlmeS1jb250ZW50OmNlbnRlcjt3aWR0aDoxMDAlfS5zdmctcHJldmlldy13cmFwIHN2Z3ttYXgtd2lkdGg6MTAwJTttYXgtaGVpZ2h0OjE5MHB4O3dpZHRoOmF1dG87ZGlzcGxheTpibG9jazttYXJnaW46MCBhdXRvfS5jb2RlLWJsb2Nre2JhY2tncm91bmQ6I2YyZjRmODtib3JkZXItcmFkaXVzOjEuMnJlbTtwYWRkaW5nOjFyZW0gMS4ycmVtO2ZvbnQtZmFtaWx5OidTRiBNb25vJyxtb25vc3BhY2U7Zm9udC1zaXplOi43NXJlbTt3b3JkLWJyZWFrOmJyZWFrLWFsbDt3aGl0ZS1zcGFjZTpwcmUtd3JhcDtib3JkZXI6MXB4IHNvbGlkICNlMGU2ZWQ7bWFyZ2luOi44cmVtIDAgMXJlbTttYXgtaGVpZ2h0OjE4MHB4O292ZXJmbG93OmF1dG99LmJ1dHRvbi1yb3d7ZGlzcGxheTpmbGV4O2ZsZXgtd3JhcDp3cmFwO2dhcDouNzVyZW07bWFyZ2luOjEuMnJlbSAwIC44cmVtfWJ1dHRvbntiYWNrZ3JvdW5kOiNmZmY7Ym9yZGVyOm5vbmU7cGFkZGluZzouNnJlbSAxLjJyZW07Ym9yZGVyLXJhZGl1czoycmVtO2ZvbnQtd2VpZ2h0OjUwMDtmb250LXNpemU6Ljg1cmVtO2N1cnNvcjpwb2ludGVyO3RyYW5zaXRpb246LjE1cztmb250LWZhbWlseTppbmhlcml0O2JvcmRlcjoxcHggc29saWQgI2NmZGVlOTtkaXNwbGF5OmlubGluZS1mbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtnYXA6LjRyZW19LmJ0bi1jb252ZXJ0e2JhY2tncm91bmQ6I2ZmOGM0Mjtib3JkZXItY29sb3I6I2UwN2EzNjtjb2xvcjojZmZmO2JveC1zaGFkb3c6MCAycHggNnB4IHJnYmEoMjU1LDE0MCw2NiwuMil9LmJ0bi1jb252ZXJ0OmhvdmVye2JhY2tncm91bmQ6I2YwNzYyYzt0cmFuc2Zvcm06dHJhbnNsYXRlWSgtMXB4KX0uYnRuLW91dGxpbmUtZGFya3tiYWNrZ3JvdW5kOiMyYzVmOGE7Ym9yZGVyLWNvbG9yOiMxZjRmNzM7Y29sb3I6I2ZmZn0uYnRuLW91dGxpbmUtZGFyazpob3ZlcntiYWNrZ3JvdW5kOiMxZjRlNzJ9LmJ0bi1zb2Z0e2JhY2tncm91bmQ6I2YxZjNmNztib3JkZXItY29sb3I6I2RjZTNlYztjb2xvcjojMmM1ZjhhfS5idG4tc29mdDpob3ZlcntiYWNrZ3JvdW5kOiNlNmVjZjN9LnN0YXR1cy1tZXNzYWdle21hcmdpbi10b3A6MXJlbTtmb250LXNpemU6Ljg1cmVtO3BhZGRpbmc6LjdyZW0gMXJlbTtib3JkZXItcmFkaXVzOjEuMnJlbTtiYWNrZ3JvdW5kOiNmMWYzZjY7Y29sb3I6IzJiNGY2Yztmb250LXdlaWdodDo0NTB9LnN0YXR1cy1lcnJvcntiYWNrZ3JvdW5kOiNmZmU2ZTI7Y29sb3I6I2JjM2YwMDtib3JkZXItbGVmdDo0cHggc29saWQgI2ZmNmI0YX0uc3RhdHVzLXN1Y2Nlc3N7YmFja2dyb3VuZDojZTFmN2VhO2NvbG9yOiMxZjZlM2Y7Ym9yZGVyLWxlZnQ6NHB4IHNvbGlkICMyZWNjNzF9LmZvb3Rlci1ub3Rle2JhY2tncm91bmQ6I2ZlZmFmNTtwYWRkaW5nOjFyZW0gMnJlbTt0ZXh0LWFsaWduOmNlbnRlcjtmb250LXNpemU6Ljc1cmVtO2NvbG9yOiM2YTdmOTY7Ym9yZGVyLXRvcDoxcHggc29saWQgI2ZmZTFjNH1AbWVkaWEgKG1heC13aWR0aDo3NTBweCl7Ym9keXtwYWRkaW5nOjFyZW19LmZsZXgtZ3JpZHtwYWRkaW5nOjFyZW19LmNhcmQtYm9keXtwYWRkaW5nOjAgMXJlbSAxcmVtIDFyZW19fTwvc3R5bGU+PGRpdiBjbGFzcz1jb250YWluZXI+PGRpdiBjbGFzcz1oZWFkZXI+PGgxPuKcpyBQYXRoIOKGkiBTY3JhdGNoIFNWRyDinKcgPHNwYW4gY2xhc3M9YmFkZ2UtaHVtYW4+ZmVpdG8gw6AgbcOjbzwvc3Bhbj48L2gxPjxwPkNvbGUgbyBwdXJvIDxzdHJvbmc+ZD0iIC4uLiAiPC9zdHJvbmc+IGRvIHNldSBwYXRoIGUgZ2FuaGUgdW0gU1ZHIHByb250byBwYXJhIG8gZWRpdG9yIGRlIGZhbnRhc2lhcyBkbyBTY3JhdGNoPHA+ZmVpdG8gcG9yIGxvbGRvX2dnIG5vIGRpc2NvcmQ8L2Rpdj48ZGl2IGNsYXNzPWZsZXgtZ3JpZD48ZGl2IGNsYXNzPWNhcmQ+PGRpdiBjbGFzcz1jYXJkLWhlYWRlcj48c3Bhbj7wn5OQPC9zcGFuPiAxLiBPIHBhdGggZG8gc2V1IGRlc2VuaG88L2Rpdj48ZGl2IGNsYXNzPWNhcmQtYm9keT48dGV4dGFyZWEgaWQ9cGF0aERhdGEgcGxhY2Vob2xkZXI9IkV4ZW1wbG86IE0yMCAyMCBMIDE4MCAyMCBMIDEwMCAxNjAgWgoKb3UgdW0gY29yYcOnw6NvOgpNMTAwIDMwIEMgNDAgMTAsIDEwIDcwLCAxMDAgMTMwIEMgMTkwIDcwLCAxNjAgMTAsIDEwMCAzMCBaInJvd3M9NT48L3RleHRhcmVhPjxkaXYgY2xhc3M9YnV0dG9uLXJvdz48YnV0dG9uIGNsYXNzPWJ0bi1jb252ZXJ0IGlkPWNvbnZlcnRBY3Rpb24+4pyoIENvbnZlcnRlciBwYXJhIFNWRzwvYnV0dG9uPiA8YnV0dG9uIGNsYXNzPWJ0bi1zb2Z0IGlkPWNsZWFyRmllbGRzPvCfl5HvuI8gTGltcGFyPC9idXR0b24+IDxidXR0b24gY2xhc3M9YnRuLXNvZnQgaWQ9bG9hZEV4YW1wbGU+4q2QIEV4ZW1wbG8gZXN0cmVsYTwvYnV0dG9uPjwvZGl2PjxkaXYgY2xhc3M9c3RhdHVzLW1lc3NhZ2UgaWQ9bGl2ZVN0YXR1cz7wn5KsIENvbGUgdW0gcGF0aCB2w6FsaWRvIGUgY2xpcXVlIGVtIGNvbnZlcnRlci48L2Rpdj48L2Rpdj48L2Rpdj48ZGl2IGNsYXNzPWNhcmQ+PGRpdiBjbGFzcz1jYXJkLWhlYWRlcj48c3Bhbj7wn5aM77iPPC9zcGFuPiAyLiBWaXN1YWxpemHDp8OjbzwvZGl2PjxkaXYgY2xhc3M9Y2FyZC1ib2R5PjxkaXYgY2xhc3M9cHJldmlldy1ib3g+PGRpdiBjbGFzcz1zdmctcHJldmlldy13cmFwIGlkPXByZXZpZXdBcmVhPjxzdmcgaGVpZ2h0PTE4MCBpZD1keW5hbWljUHJldmlldyB2aWV3Qm94PSIwIDAgMjAwIDIwMCJ3aWR0aD0xODAgeG1sbnM9aHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmc+PHJlY3QgZmlsbD0jZjlmNWYwIGhlaWdodD0yMDAgcng9MTYgcnk9MTYgd2lkdGg9MjAwIC8+PHRleHQgZmlsbD0jYjI5NjdjIGZvbnQtc2l6ZT0xMiB0ZXh0LWFuY2hvcj1taWRkbGUgeD0xMDAgeT0xMDUgZm9udC1mYW1pbHk9bW9ub3NwYWNlPm5lbmh1bSBwYXRoPC90ZXh0Pjx0ZXh0IGZpbGw9I2IyOTY3YyBmb250LXNpemU9MTEgdGV4dC1hbmNob3I9bWlkZGxlIHg9MTAwIHk9MTI1PumihOiniCBhcGFyZWNlcsOhIGFxdWk8L3RleHQ+PC9zdmc+PC9kaXY+PC9kaXY+PGRpdiBjbGFzcz1jYXJkLWhlYWRlciBzdHlsZT1wYWRkaW5nLWxlZnQ6MDtib3JkZXItYm90dG9tOm5vbmU7bWFyZ2luLWJvdHRvbTowPjxzcGFuPvCfk6Y8L3NwYW4+IDMuIEPDs2RpZ28gU1ZHIChTY3JhdGNoKTwvZGl2PjxkaXYgY2xhc3M9Y29kZS1ibG9jayBpZD1zdmdSZXN1bHRCbG9jaz48Y29kZSBpZD1maW5hbFN2Z0NvZGU+TmVuaHVtIFNWRyBnZXJhZG8gYWluZGE8L2NvZGU+PC9kaXY+PGRpdiBjbGFzcz1idXR0b24tcm93PjxidXR0b24gY2xhc3M9YnRuLW91dGxpbmUtZGFyayBpZD1jb3B5U3ZnQnRuIGRpc2FibGVkPvCfk4sgQ29waWFyIGPDs2RpZ288L2J1dHRvbj4gPGJ1dHRvbiBjbGFzcz1idG4tb3V0bGluZS1kYXJrIGlkPWRvd25sb2FkU3ZnQnRuIGRpc2FibGVkPuKsh++4jyBCYWl4YXIgLnN2ZzwvYnV0dG9uPjwvZGl2PjxkaXYgc3R5bGU9ImZvbnQtc2l6ZTouN3JlbTttYXJnaW4tdG9wOi44cmVtO2JhY2tncm91bmQ6I2ZhZjNlYjtib3JkZXItcmFkaXVzOjFyZW07cGFkZGluZzouNXJlbSAuOHJlbTtjb2xvcjojNzU1NjNiIj7wn6epIE8gU1ZHIGrDoSB2ZW0gY29tIGNvciBsYXJhbmphICgjRkY4QzQyKSBlIGNvbnRvcm5vIHN1YXZlLCBwcsOzcHJpbyBwYXJhIGFycmFzdGFyIGRpcmV0byBubyBTY3JhdGNoLjwvZGl2PjwvZGl2PjwvZGl2PjwvZGl2PjxkaXYgY2xhc3M9Zm9vdGVyLW5vdGU+8J+SoSBCYXN0YSBjb3BpYXIgbyB2YWxvciBkbyBhdHJpYnV0byA8Y29kZT5kPSIuLi4iPC9jb2RlPiBkZSBxdWFscXVlciBTVkcuIE8gY29udmVyc29yIGdlcmEgdW0gYXJxdWl2byAuc3ZnIGNvbXBhdMOtdmVsIGNvbSBmYW50YXNpYXMgZG8gU2NyYXRjaCAzLjAuPC9kaXY+PC9kaXY+PHNjcmlwdD4hZnVuY3Rpb24oKXtjb25zdCBpPWRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJwYXRoRGF0YSIpLGU9ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImNvbnZlcnRBY3Rpb24iKSx0PWRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJjbGVhckZpZWxkcyIpLHI9ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImxvYWRFeGFtcGxlIiksbz1kb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiY29weVN2Z0J0biIpLG49ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImRvd25sb2FkU3ZnQnRuIiksYT1kb2N1bWVudC5nZXRFbGVtZW50QnlJZCgibGl2ZVN0YXR1cyIpLGQ9ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImZpbmFsU3ZnQ29kZSIpLGw9ZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImR5bmFtaWNQcmV2aWV3Iik7ZnVuY3Rpb24gcyhlLHQ9ITEscj0hMSl7YS5pbm5lckhUTUw9ZSxhLmNsYXNzTGlzdC5yZW1vdmUoInN0YXR1cy1lcnJvciIsInN0YXR1cy1zdWNjZXNzIiksdCYmYS5jbGFzc0xpc3QuYWRkKCJzdGF0dXMtZXJyb3IiKSxyJiZhLmNsYXNzTGlzdC5hZGQoInN0YXR1cy1zdWNjZXNzIil9ZnVuY3Rpb24gYygpe2Zvcig7bC5maXJzdENoaWxkOylsLnJlbW92ZUNoaWxkKGwuZmlyc3RDaGlsZCk7Y29uc3QgZT1kb2N1bWVudC5jcmVhdGVFbGVtZW50TlMoImh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiwicmVjdCIpO2Uuc2V0QXR0cmlidXRlKCJ3aWR0aCIsIjIwMCIpLGUuc2V0QXR0cmlidXRlKCJoZWlnaHQiLCIyMDAiKSxlLnNldEF0dHJpYnV0ZSgiZmlsbCIsIiNmOWY1ZjAiKSxlLnNldEF0dHJpYnV0ZSgicngiLCIxNiIpLGwuYXBwZW5kQ2hpbGQoZSk7Y29uc3QgdD1kb2N1bWVudC5jcmVhdGVFbGVtZW50TlMoImh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiwidGV4dCIpO3Quc2V0QXR0cmlidXRlKCJ4IiwiMTAwIiksdC5zZXRBdHRyaWJ1dGUoInkiLCIxMDUiKSx0LnNldEF0dHJpYnV0ZSgidGV4dC1hbmNob3IiLCJtaWRkbGUiKSx0LnNldEF0dHJpYnV0ZSgiZmlsbCIsIiNiMjk2N2MiKSx0LnNldEF0dHJpYnV0ZSgiZm9udC1zaXplIiwiMTIiKSx0LnRleHRDb250ZW50PSJuZW5odW0gcGF0aCIsbC5hcHBlbmRDaGlsZCh0KTtjb25zdCByPWRvY3VtZW50LmNyZWF0ZUVsZW1lbnROUygiaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLCJ0ZXh0Iik7ci5zZXRBdHRyaWJ1dGUoIngiLCIxMDAiKSxyLnNldEF0dHJpYnV0ZSgieSIsIjEyNSIpLHIuc2V0QXR0cmlidXRlKCJ0ZXh0LWFuY2hvciIsIm1pZGRsZSIpLHIuc2V0QXR0cmlidXRlKCJmaWxsIiwiI2IyOTY3YyIpLHIuc2V0QXR0cmlidXRlKCJmb250LXNpemUiLCIxMSIpLHIudGV4dENvbnRlbnQ9InByZXZpZXcgYXBhcmVjZXLDoSBhcXVpIixsLmFwcGVuZENoaWxkKHIpLGwuc2V0QXR0cmlidXRlKCJ2aWV3Qm94IiwiMCAwIDIwMCAyMDAiKSxsLnNldEF0dHJpYnV0ZSgid2lkdGgiLCIyMDAiKSxsLnNldEF0dHJpYnV0ZSgiaGVpZ2h0IiwiMjAwIil9ZS5hZGRFdmVudExpc3RlbmVyKCJjbGljayIsZnVuY3Rpb24oKXtjb25zdCBlPWkudmFsdWU7aWYoIWUudHJpbSgpKXJldHVybiBzKCLinI/vuI8gT3BzLCBuZW5odW0gcGF0aCBmb2kgY29sYWRvLiBDb2xlIHVtIHBhdGggb3UgdXNlIG8gZXhlbXBsby4iLCExKSxkLmlubmVyVGV4dD0iTmVuaHVtIFNWRyBnZXJhZG8gYWluZGEiLG8uZGlzYWJsZWQ9ITAsbi5kaXNhYmxlZD0hMCx2b2lkIGMoKTtpZighZnVuY3Rpb24oZSl7aWYoZSYmInN0cmluZyI9PXR5cGVvZiBlKXtjb25zdCByPWUudHJpbSgpO2lmKDAhPT1yLmxlbmd0aCl7dmFyIHQ9L1tNTEhWQ1NRVEFaXS9pLnRlc3QociksZT0hci5pbmNsdWRlcygiPCIpJiYhci5pbmNsdWRlcygiPiIpO3JldHVybiB0JiZlfX19KGUpKXJldHVybiBzKCfinYwgUGF0aCBpbnbDoWxpZG8hIENlcnRpZmlxdWUtc2UgZGUgY29sYXIgYXBlbmFzIG8gY29udGXDumRvIGRvIGQ9Ii4uLiIgKGV4OiBNMTAgMTAgTDkwIDkwKS4gRXZpdGUgdGFncyBIVE1MLicsITApLGQuaW5uZXJUZXh0PSJQYXRoIGludsOhbGlkbyDigJQgY29ycmlqYSBvIGZvcm1hdG8iLG8uZGlzYWJsZWQ9ITAsbi5kaXNhYmxlZD0hMCx2b2lkIGMoKTt0cnl7dmFyIHQ9YDxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiPgogIDxwYXRoIGQ9IiR7cj1yPShyPWUpLnRyaW0oKS5yZXBsYWNlKC9ccysvZywiICIpLnJlcGxhY2UoLyxccyovZywiLCIpLHIucmVwbGFjZSgvWzw+JiciXS9nLGZ1bmN0aW9uKGUpe3JldHVybiI8Ij09PWU/IiZsdDsiOiI+Ij09PWU/IiZndDsiOiImIj09PWU/IiZhbXA7IjoiJyI9PT1lPyImYXBvczsiOiciJz09PWU/IiZxdW90OyI6ZX0pfSIgZmlsbD0iI0ZGOEM0MiIgc3Ryb2tlPSIjNGEyYTE0IiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgo8L3N2Zz5gO2QuaW5uZXJUZXh0PXQsby5kaXNhYmxlZD0hMSxzKCLinIUgU1ZHIGdlcmFkbyBjb20gc3VjZXNzbyEgQWdvcmEgdm9jw6ogcG9kZSBjb3BpYXIgb3UgYmFpeGFyLiIsbi5kaXNhYmxlZD0hMSwhMCksZnVuY3Rpb24oZSl7dHJ5e2Zvcig7bC5maXJzdENoaWxkOylsLnJlbW92ZUNoaWxkKGwuZmlyc3RDaGlsZCk7Y29uc3Qgbz1uZXcgRE9NUGFyc2VyO2NvbnN0IG49by5wYXJzZUZyb21TdHJpbmcoZSwiaW1hZ2Uvc3ZnK3htbCIpLmRvY3VtZW50RWxlbWVudDtpZighbnx8InN2ZyIhPT1uLm5vZGVOYW1lfHxuLnF1ZXJ5U2VsZWN0b3IoInBhcnNlcmVycm9yIikpdGhyb3cgbmV3IEVycm9yKCJmYWxoYSBubyBwYXJzZSIpO3ZhciB0PW4uZ2V0QXR0cmlidXRlKCJ2aWV3Qm94Iil8fCIwIDAgMjAwIDIwMCIscj1uLmdldEF0dHJpYnV0ZSgid2lkdGgiKXx8IjIwMCIsaT1uLmdldEF0dHJpYnV0ZSgiaGVpZ2h0Iil8fCIyMDAiO2wuc2V0QXR0cmlidXRlKCJ2aWV3Qm94Iix0KSxsLnNldEF0dHJpYnV0ZSgid2lkdGgiLHIpLGwuc2V0QXR0cmlidXRlKCJoZWlnaHQiLGkpO2ZvcihsZXQgZT0wO2U8bi5jaGlsZHJlbi5sZW5ndGg7ZSsrKXtjb25zdCBhPW4uY2hpbGRyZW5bZV07bC5hcHBlbmRDaGlsZChhLmNsb25lTm9kZSghMCkpfX1jYXRjaChlKXtmb3IoY29uc29sZS53YXJuKCJwcmV2aWV3IGVycm9yIixlKTtsLmZpcnN0Q2hpbGQ7KWwucmVtb3ZlQ2hpbGQobC5maXJzdENoaWxkKTtjb25zdCBkPWRvY3VtZW50LmNyZWF0ZUVsZW1lbnROUygiaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLCJyZWN0Iik7ZC5zZXRBdHRyaWJ1dGUoIndpZHRoIiwiMjAwIiksZC5zZXRBdHRyaWJ1dGUoImhlaWdodCIsIjIwMCIpLGQuc2V0QXR0cmlidXRlKCJmaWxsIiwiI2Y0ZWRlNSIpLGQuc2V0QXR0cmlidXRlKCJyeCIsIjEyIiksbC5hcHBlbmRDaGlsZChkKTtjb25zdCBzPWRvY3VtZW50LmNyZWF0ZUVsZW1lbnROUygiaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLCJ0ZXh0Iik7cy5zZXRBdHRyaWJ1dGUoIngiLCIxMDAiKSxzLnNldEF0dHJpYnV0ZSgieSIsIjExMCIpLHMuc2V0QXR0cmlidXRlKCJ0ZXh0LWFuY2hvciIsIm1pZGRsZSIpLHMuc2V0QXR0cmlidXRlKCJmaWxsIiwiI2I4NmIyZSIpLHMuc2V0QXR0cmlidXRlKCJmb250LXNpemUiLCIxMiIpLHMudGV4dENvbnRlbnQ9IuKaoO+4jyBwcmV2aWV3IGluZGlzcG9uw612ZWwiLGwuYXBwZW5kQ2hpbGQocyk7Y29uc3QgYz1kb2N1bWVudC5jcmVhdGVFbGVtZW50TlMoImh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiwidGV4dCIpO2Muc2V0QXR0cmlidXRlKCJ4IiwiMTAwIiksYy5zZXRBdHRyaWJ1dGUoInkiLCIxMzAiKSxjLnNldEF0dHJpYnV0ZSgidGV4dC1hbmNob3IiLCJtaWRkbGUiKSxjLnNldEF0dHJpYnV0ZSgiZmlsbCIsIiM5YjdiNjIiKSxjLnNldEF0dHJpYnV0ZSgiZm9udC1zaXplIiwiMTAiKSxjLnRleHRDb250ZW50PSJtYXMgbyBjw7NkaWdvIGVzdMOhIG9rIixsLmFwcGVuZENoaWxkKGMpfX0odCl9Y2F0Y2goZSl7cyhgRXJybyBuYSBnZXJhw6fDo286ICR7ZS5tZXNzYWdlfWAsITApLGQuaW5uZXJUZXh0PSJFcnJvIGFvIHByb2Nlc3NhciBvIHBhdGgiLG8uZGlzYWJsZWQ9ITAsbi5kaXNhYmxlZD0hMCxjKCl9dmFyIHJ9KSx0LmFkZEV2ZW50TGlzdGVuZXIoImNsaWNrIixmdW5jdGlvbigpe2kudmFsdWU9IiIsZC5pbm5lclRleHQ9Ik5lbmh1bSBTVkcgZ2VyYWRvIGFpbmRhIixvLmRpc2FibGVkPSEwLHMoIvCfp7kgVHVkbyBsaW1wby4gQ29sZSB1bSBub3ZvIHBhdGggZSBjbGlxdWUgZW0gY29udmVydGVyLiIsIShuLmRpc2FibGVkPSEwKSksYygpfSksci5hZGRFdmVudExpc3RlbmVyKCJjbGljayIsZnVuY3Rpb24oKXtzKCLirZAgRXhlbXBsbyBlc3RyZWxhIGNhcnJlZ2FkbyEgQ2xpcXVlIGVtICdDb252ZXJ0ZXIgcGFyYSBTVkcnIHBhcmEgdmVyIG8gcmVzdWx0YWRvLiIsIShpLnZhbHVlPSJNMTAwIDEwIEwgMTE4IDY1IEwgMTc3IDc1IEwgMTMyIDExNSBMIDE0NyAxNzAgTCAxMDAgMTQwIEwgNTMgMTcwIEwgNjggMTE1IEwgMjMgNzUgTCA4MiA2NSBaIikpLGQuaW5uZXJUZXh0PSJOZW5odW0gU1ZHIGdlcmFkbyBhaW5kYSDigJQgY2xpcXVlIGVtIGNvbnZlcnRlciIsby5kaXNhYmxlZD0hMCxuLmRpc2FibGVkPSEwLGMoKX0pLG8uYWRkRXZlbnRMaXN0ZW5lcigiY2xpY2siLGFzeW5jIGZ1bmN0aW9uKCl7Y29uc3QgdD1kLmlubmVyVGV4dDtpZih0JiYiTmVuaHVtIFNWRyBnZXJhZG8gYWluZGEiIT09dCYmIlBhdGggaW52w6FsaWRvIOKAlCBjb3JyaWphIG8gZm9ybWF0byIhPT10JiYhdC5pbmNsdWRlcygiRXJybyIpKXRyeXthd2FpdCBuYXZpZ2F0b3IuY2xpcGJvYXJkLndyaXRlVGV4dCh0KSxzKCLwn5OLIEPDs2RpZ28gU1ZHIGNvcGlhZG8hIEFnb3JhIMOpIHPDsyBjb2xhciBubyBlZGl0b3IgZGUgdGV4dG8gb3UgaW1wb3J0YXIgbm8gU2NyYXRjaC4iLCExLCEwKX1jYXRjaChlKXtjb25zdCByPWRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoInRleHRhcmVhIik7ci52YWx1ZT10LGRvY3VtZW50LmJvZHkuYXBwZW5kQ2hpbGQociksci5zZWxlY3QoKSxkb2N1bWVudC5leGVjQ29tbWFuZCgiY29weSIpLGRvY3VtZW50LmJvZHkucmVtb3ZlQ2hpbGQocikscygi8J+TiyBDb3BpYWRvIChtw6l0b2RvIGFsdGVybmF0aXZvKS4gTyBTVkcgZXN0w6EgbmEgw6FyZWEgZGUgdHJhbnNmZXLDqm5jaWEuIiwhMSwhMCl9ZWxzZSBzKCLwn5OtIE7Do28gaMOhIFNWRyB2w6FsaWRvIHBhcmEgY29waWFyLiBDb252ZXJ0YSB1bSBwYXRoIHByaW1laXJvLiIsITApfSksbi5hZGRFdmVudExpc3RlbmVyKCJjbGljayIsZnVuY3Rpb24oKXtjb25zdCBlPWQuaW5uZXJUZXh0O2lmKGUmJiJOZW5odW0gU1ZHIGdlcmFkbyBhaW5kYSIhPT1lJiYiUGF0aCBpbnbDoWxpZG8g4oCUIGNvcnJpamEgbyBmb3JtYXRvIiE9PWUmJiFlLmluY2x1ZGVzKCJFcnJvIikpe3ZhciB0PW5ldyBCbG9iKFtlXSx7dHlwZToiaW1hZ2Uvc3ZnK3htbDtjaGFyc2V0PXV0Zi04In0pLHQ9VVJMLmNyZWF0ZU9iamVjdFVSTCh0KTtjb25zdCByPWRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoImEiKTtyLmhyZWY9dCxyLmRvd25sb2FkPSJtZXVfZmFudGFzaWFfc2NyYXRjaC5zdmciLGRvY3VtZW50LmJvZHkuYXBwZW5kQ2hpbGQociksci5jbGljaygpLGRvY3VtZW50LmJvZHkucmVtb3ZlQ2hpbGQociksVVJMLnJldm9rZU9iamVjdFVSTCh0KSxzKCLwn5OBIERvd25sb2FkIGNvbmNsdcOtZG8hIEFycmFzdGUgbyBhcnF1aXZvIC5zdmcgZGlyZXRvIHBhcmEgYSDDoXJlYSBkZSBmYW50YXNpYXMgZG8gU2NyYXRjaC4iLCExLCEwKX1lbHNlIHMoIuKaoO+4jyBHZXJlIHVtIFNWRyB2w6FsaWRvIHByaW1laXJvIGFudGVzIGRlIGJhaXhhci4iLCEwKX0pLGMoKSxvLmRpc2FibGVkPSEwLG4uZGlzYWJsZWQ9ITAscygi8J+SoSBDb2xlIHVtIHBhdGggdsOhbGlkbyBlIGFwZXJ0ZSAnQ29udmVydGVyIHBhcmEgU1ZHJy4iLCEoZC5pbm5lclRleHQ9Ik5lbmh1bSBTVkcgZ2VyYWRvIGFpbmRhIikpfSgpPC9zY3JpcHQ+";
-document.write(atob(nothing));
+    (function() {
+        // --- elementos do DOM
+        const pathTextarea = document.getElementById('pathData');
+        const convertBtn = document.getElementById('convertAction');
+        const clearBtn = document.getElementById('clearFields');
+        const exampleBtn = document.getElementById('loadExample');
+        const copyBtn = document.getElementById('copySvgBtn');
+        const downloadBtn = document.getElementById('downloadSvgBtn');
+        const statusDiv = document.getElementById('liveStatus');
+        const finalCodeSpan = document.getElementById('finalSvgCode');
+        const previewSvg = document.getElementById('dynamicPreview');
+
+        // --- pequenas funções auxiliares
+        function setStatusMessage(msg, isError = false, isSuccess = false) {
+            statusDiv.innerHTML = msg;
+            statusDiv.classList.remove('status-error', 'status-success');
+            if (isError) statusDiv.classList.add('status-error');
+            if (isSuccess) statusDiv.classList.add('status-success');
+            // se não for erro nem sucesso, mantém classe neutra
+        }
+
+        // validação simples mas eficaz: checa se o path tem comandos básicos de desenho
+        function seemsValidPath(rawString) {
+            if (!rawString || typeof rawString !== 'string') return false;
+            const trimmed = rawString.trim();
+            if (trimmed.length === 0) return false;
+            // pelo menos uma letra de comando e sem tags HTML
+            const hasCommand = /[MLHVCSQTAZ]/i.test(trimmed);
+            const noTags = !trimmed.includes('<') && !trimmed.includes('>');
+            return hasCommand && noTags;
+        }
+
+        // gera o SVG completo no formato que o Scratch entende
+        function buildScratchSvg(pathDirty) {
+            const cleanPath = pathDirty.trim().replace(/\s+/g, ' ').replace(/,\s*/g, ',');
+            // cores inspiradas no Scratch: laranja vibrante + contorno marrom suave
+            const fillColor = "#FF8C42";
+            const strokeColor = "#4a2a14";
+            const strokeWidth = "1.5";
+            
+            const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <path d="${escapeXml(cleanPath)}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}" stroke-linejoin="round" stroke-linecap="round" />
+</svg>`;
+            return svgString;
+        }
+
+        function escapeXml(str) {
+            return str.replace(/[<>&'"]/g, function(match) {
+                if (match === '<') return '&lt;';
+                if (match === '>') return '&gt;';
+                if (match === '&') return '&amp;';
+                if (match === "'") return '&apos;';
+                if (match === '"') return '&quot;';
+                return match;
+            });
+        }
+
+        // mostra uma prévia bonitinha a partir do código SVG final
+        function updatePreviewFromSvg(svgCode) {
+            try {
+                // limpa o conteúdo atual do preview
+                while (previewSvg.firstChild) {
+                    previewSvg.removeChild(previewSvg.firstChild);
+                }
+                const parser = new DOMParser();
+                const parsedDoc = parser.parseFromString(svgCode, "image/svg+xml");
+                const svgRoot = parsedDoc.documentElement;
+                if (svgRoot && svgRoot.nodeName === 'svg' && !svgRoot.querySelector('parsererror')) {
+                    // copia atributos viewBox e dimensões pro preview
+                    const viewBoxAttr = svgRoot.getAttribute('viewBox') || '0 0 200 200';
+                    const widthAttr = svgRoot.getAttribute('width') || '200';
+                    const heightAttr = svgRoot.getAttribute('height') || '200';
+                    previewSvg.setAttribute('viewBox', viewBoxAttr);
+                    previewSvg.setAttribute('width', widthAttr);
+                    previewSvg.setAttribute('height', heightAttr);
+                    // copia todos os filhos do svr parseado (normalmente um path)
+                    for (let i = 0; i < svgRoot.children.length; i++) {
+                        const child = svgRoot.children[i];
+                        previewSvg.appendChild(child.cloneNode(true));
+                    }
+                } else {
+                    throw new Error('falha no parse');
+                }
+            } catch (e) {
+                console.warn("preview error", e);
+                // fallback: mostrar mensagem amigável no preview
+                while (previewSvg.firstChild) previewSvg.removeChild(previewSvg.firstChild);
+                const fallbackRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                fallbackRect.setAttribute("width", "200");
+                fallbackRect.setAttribute("height", "200");
+                fallbackRect.setAttribute("fill", "#f4ede5");
+                fallbackRect.setAttribute("rx", "12");
+                previewSvg.appendChild(fallbackRect);
+                const errText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                errText.setAttribute("x", "100");
+                errText.setAttribute("y", "110");
+                errText.setAttribute("text-anchor", "middle");
+                errText.setAttribute("fill", "#b86b2e");
+                errText.setAttribute("font-size", "12");
+                errText.textContent = "⚠️ preview indisponível";
+                previewSvg.appendChild(errText);
+                const errSub = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                errSub.setAttribute("x", "100");
+                errSub.setAttribute("y", "130");
+                errSub.setAttribute("text-anchor", "middle");
+                errSub.setAttribute("fill", "#9b7b62");
+                errSub.setAttribute("font-size", "10");
+                errSub.textContent = "mas o código está ok";
+                previewSvg.appendChild(errSub);
+            }
+        }
+
+        // reseta o preview para o estado neutro (sem path)
+        function resetPreviewToEmpty() {
+            while (previewSvg.firstChild) {
+                previewSvg.removeChild(previewSvg.firstChild);
+            }
+            const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            bgRect.setAttribute("width", "200");
+            bgRect.setAttribute("height", "200");
+            bgRect.setAttribute("fill", "#f9f5f0");
+            bgRect.setAttribute("rx", "16");
+            previewSvg.appendChild(bgRect);
+            
+            const line1 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            line1.setAttribute("x", "100");
+            line1.setAttribute("y", "105");
+            line1.setAttribute("text-anchor", "middle");
+            line1.setAttribute("fill", "#b2967c");
+            line1.setAttribute("font-size", "12");
+            line1.textContent = "nenhum path";
+            previewSvg.appendChild(line1);
+            
+            const line2 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            line2.setAttribute("x", "100");
+            line2.setAttribute("y", "125");
+            line2.setAttribute("text-anchor", "middle");
+            line2.setAttribute("fill", "#b2967c");
+            line2.setAttribute("font-size", "11");
+            line2.textContent = "preview aparecerá aqui";
+            previewSvg.appendChild(line2);
+            
+            previewSvg.setAttribute("viewBox", "0 0 200 200");
+            previewSvg.setAttribute("width", "200");
+            previewSvg.setAttribute("height", "200");
+        }
+
+        // função principal: pega o path, valida, gera SVG, atualiza tela
+        function performConversion() {
+            const rawPath = pathTextarea.value;
+            if (!rawPath.trim()) {
+                setStatusMessage("✏️ Ops, nenhum path foi colado. Cole um path ou use o exemplo.", false);
+                finalCodeSpan.innerText = "Nenhum SVG gerado ainda";
+                copyBtn.disabled = true;
+                downloadBtn.disabled = true;
+                resetPreviewToEmpty();
+                return;
+            }
+            
+            if (!seemsValidPath(rawPath)) {
+                setStatusMessage("❌ Path inválido! Certifique-se de colar apenas o conteúdo do d=\"...\" (ex: M10 10 L90 90). Evite tags HTML.", true);
+                finalCodeSpan.innerText = "Path inválido — corrija o formato";
+                copyBtn.disabled = true;
+                downloadBtn.disabled = true;
+                resetPreviewToEmpty();
+                return;
+            }
+            
+            try {
+                const generatedSvg = buildScratchSvg(rawPath);
+                finalCodeSpan.innerText = generatedSvg;
+                copyBtn.disabled = false;
+                downloadBtn.disabled = false;
+                setStatusMessage("✅ SVG gerado com sucesso! Agora você pode copiar ou baixar.", false, true);
+                updatePreviewFromSvg(generatedSvg);
+            } catch (err) {
+                setStatusMessage(`Erro na geração: ${err.message}`, true);
+                finalCodeSpan.innerText = "Erro ao processar o path";
+                copyBtn.disabled = true;
+                downloadBtn.disabled = true;
+                resetPreviewToEmpty();
+            }
+        }
+
+        // limpar tudo
+        function resetAll() {
+            pathTextarea.value = '';
+            finalCodeSpan.innerText = "Nenhum SVG gerado ainda";
+            copyBtn.disabled = true;
+            downloadBtn.disabled = true;
+            setStatusMessage("🧹 Tudo limpo. Cole um novo path e clique em converter.", false);
+            resetPreviewToEmpty();
+        }
+
+        // carregar exemplo bacana: estrela simétrica
+        function loadStarExample() {
+            const starPath = "M100 10 L 118 65 L 177 75 L 132 115 L 147 170 L 100 140 L 53 170 L 68 115 L 23 75 L 82 65 Z";
+            pathTextarea.value = starPath;
+            setStatusMessage("⭐ Exemplo estrela carregado! Clique em 'Converter para SVG' para ver o resultado.", false);
+            // não converte automático para dar chance de editar, mas já mostra dica
+            finalCodeSpan.innerText = "Nenhum SVG gerado ainda — clique em converter";
+            copyBtn.disabled = true;
+            downloadBtn.disabled = true;
+            resetPreviewToEmpty();
+        }
+
+        // copiar o código SVG para a área de transferência
+        async function copySvgToClipboard() {
+            const svgText = finalCodeSpan.innerText;
+            if (!svgText || svgText === "Nenhum SVG gerado ainda" || svgText === "Path inválido — corrija o formato" || svgText.includes("Erro")) {
+                setStatusMessage("📭 Não há SVG válido para copiar. Converta um path primeiro.", true);
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(svgText);
+                setStatusMessage("📋 Código SVG copiado! Agora é só colar no editor de texto ou importar no Scratch.", false, true);
+            } catch (err) {
+                // fallback manual
+                const textareaTemp = document.createElement('textarea');
+                textareaTemp.value = svgText;
+                document.body.appendChild(textareaTemp);
+                textareaTemp.select();
+                document.execCommand('copy');
+                document.body.removeChild(textareaTemp);
+                setStatusMessage("📋 Copiado (método alternativo). O SVG está na área de transferência.", false, true);
+            }
+        }
+
+        // baixar arquivo .svg
+        function downloadSvgFile() {
+            const svgContent = finalCodeSpan.innerText;
+            if (!svgContent || svgContent === "Nenhum SVG gerado ainda" || svgContent === "Path inválido — corrija o formato" || svgContent.includes("Erro")) {
+                setStatusMessage("⚠️ Gere um SVG válido primeiro antes de baixar.", true);
+                return;
+            }
+            const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+            const downloadUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = 'meu_fantasia_scratch.svg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(downloadUrl);
+            setStatusMessage("📁 Download concluído! Arraste o arquivo .svg direto para a área de fantasias do Scratch.", false, true);
+        }
+
+        // eventos e inicialização
+        convertBtn.addEventListener('click', performConversion);
+        clearBtn.addEventListener('click', resetAll);
+        exampleBtn.addEventListener('click', loadStarExample);
+        copyBtn.addEventListener('click', copySvgToClipboard);
+        downloadBtn.addEventListener('click', downloadSvgFile);
+        
+        // se o usuário aperta Enter no textarea? não, pra não confundir, mas mantemos simples
+        // estado inicial: preview neutro
+        resetPreviewToEmpty();
+        copyBtn.disabled = true;
+        downloadBtn.disabled = true;
+        finalCodeSpan.innerText = "Nenhum SVG gerado ainda";
+        setStatusMessage("💡 Cole um path válido e aperte 'Converter para SVG'.", false);
+    })();
 </script>
+</body>
+</html>
