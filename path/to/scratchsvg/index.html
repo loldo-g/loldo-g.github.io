@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Path to Scratch SVG | Conversor simples</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #e9eef3;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            padding: 2rem 1.5rem;
+            color: #1a2c3e;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .header {
+            background: #fef6e8;
+            padding: 1.8rem 2rem;
+            border-bottom: 2px solid #ffdec2;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            background: linear-gradient(120deg, #d95b1a, #ff8c42);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .header p {
+            color: #4a5b6e;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .badge-human {
+            display: inline-block;
+            background: #ffdec2;
+            border-radius: 40px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #b45a2b;
+            margin-left: 0.75rem;
+            vertical-align: middle;
+        }
+
+        .flex-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+            padding: 2rem;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 280px;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #edeff2;
+            transition: all 0.2s;
+        }
+
+        .card-header {
+            padding: 1.2rem 1.5rem 0.2rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+            border-bottom: 2px dotted #f0e2d4;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            background: #fefcf8;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            resize: vertical;
+            line-height: 1.45;
+            color: #1e2f3c;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ff9f5b;
+            box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.15);
+        }
+
+        .preview-box {
+            background: #faf9f7;
+            border-radius: 1.2rem;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1rem 0 1.2rem;
+            border: 1px solid #efe3d6;
+        }
+
+        .svg-preview-wrap {
+            background: white;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            display: inline-flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .svg-preview-wrap svg {
+            max-width: 100%;
+            max-height: 190px;
+            width: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .code-block {
+            background: #f2f4f8;
+            border-radius: 1.2rem;
+            padding: 1rem 1.2rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.75rem;
+            word-break: break-all;
+            white-space: pre-wrap;
+            border: 1px solid #e0e6ed;
+            margin: 0.8rem 0 1rem;
+            max-height: 180px;
+            overflow: auto;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1.2rem 0 0.8rem;
+        }
+
+        button {
+            background: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.15s;
+            font-family: inherit;
+            border: 1px solid #cfdee9;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-convert {
+            background: #ff8c42;
+            border-color: #e07a36;
+            color: white;
+            box-shadow: 0 2px 6px rgba(255, 140, 66, 0.2);
+        }
+
+        .btn-convert:hover {
+            background: #f0762c;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-dark {
+            background: #2c5f8a;
+            border-color: #1f4f73;
+            color: white;
+        }
+
+        .btn-outline-dark:hover {
+            background: #1f4e72;
+        }
+
+        .btn-soft {
+            background: #f1f3f7;
+            border-color: #dce3ec;
+            color: #2c5f8a;
+        }
+
+        .btn-soft:hover {
+            background: #e6ecf3;
+        }
+
+        .status-message {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            padding: 0.7rem 1rem;
+            border-radius: 1.2rem;
+            background: #f1f3f6;
+            color: #2b4f6c;
+            font-weight: 450;
+        }
+
+        .status-error {
+            background: #ffe6e2;
+            color: #bc3f00;
+            border-left: 4px solid #ff6b4a;
+        }
+
+        .status-success {
+            background: #e1f7ea;
+            color: #1f6e3f;
+            border-left: 4px solid #2ecc71;
+        }
+
+        .footer-note {
+            background: #fefaf5;
+            padding: 1rem 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #6a7f96;
+            border-top: 1px solid #ffe1c4;
+        }
+
+        @media (max-width: 750px) {
+            body {
+                padding: 1rem;
+            }
+            .flex-grid {
+                padding: 1rem;
+            }
+            .card-body {
+                padding: 0 1rem 1rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>✧  Path → Scratch SVG  ✧ <span class="badge-human">feito à mão</span></h1>
+        <p>Cole o puro <strong>d=" ... "</strong> do seu path e ganhe um SVG pronto para o editor de fantasias do Scratch</p>
+        <p>feito por loldo_gg no discord</p>
+    </div>
+
+    <div class="flex-grid">
+        <!-- lado esquerdo: entrada -->
+        <div class="card">
+            <div class="card-header">
+                <span>📐</span> 1. O path do seu desenho
+            </div>
+            <div class="card-body">
+                <textarea id="pathData" rows="5" placeholder='Exemplo: M20 20 L 180 20 L 100 160 Z&#10;&#10;ou um coração:&#10;M100 30 C 40 10, 10 70, 100 130 C 190 70, 160 10, 100 30 Z'></textarea>
+                <div class="button-row">
+                    <button id="convertAction" class="btn-convert">✨ Converter para SVG</button>
+                    <button id="clearFields" class="btn-soft">🗑️ Limpar</button>
+                    <button id="loadExample" class="btn-soft">⭐ Exemplo estrela</button>
+                </div>
+                <div id="liveStatus" class="status-message">💬 Cole um path válido e clique em converter.</div>
+            </div>
+        </div>
+
+        <!-- lado direito: preview + resultado -->
+        <div class="card">
+            <div class="card-header">
+                <span>🖌️</span> 2. Visualização
+            </div>
+            <div class="card-body">
+                <div class="preview-box">
+                    <div class="svg-preview-wrap" id="previewArea">
+                        <svg id="dynamicPreview" width="180" height="180" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="200" height="200" fill="#f9f5f0" rx="16" ry="16" />
+                            <text x="100" y="105" font-size="12" text-anchor="middle" fill="#b2967c" font-family="monospace">nenhum path</text>
+                            <text x="100" y="125" font-size="11" text-anchor="middle" fill="#b2967c">预览 aparecerá aqui</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="card-header" style="padding-left: 0; border-bottom: none; margin-bottom: 0;">
+                    <span>📦</span> 3. Código SVG (Scratch)
+                </div>
+                <div class="code-block" id="svgResultBlock">
+                    <code id="finalSvgCode">Nenhum SVG gerado ainda</code>
+                </div>
+                <div class="button-row">
+                    <button id="copySvgBtn" class="btn-outline-dark" disabled>📋 Copiar código</button>
+                    <button id="downloadSvgBtn" class="btn-outline-dark" disabled>⬇️ Baixar .svg</button>
+                </div>
+                <div style="font-size: 0.7rem; margin-top: 0.8rem; background: #faf3eb; border-radius: 1rem; padding: 0.5rem 0.8rem; color: #75563b;">
+                    🧩 O SVG já vem com cor laranja (#FF8C42) e contorno suave, próprio para arrastar direto no Scratch.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-note">
+        💡 Basta copiar o valor do atributo <code>d="..."</code> de qualquer SVG. O conversor gera um arquivo .svg compatível com fantasias do Scratch 3.0.
+    </div>
+</div>
+
+<script>
+    (function() {
+        // --- elementos do DOM
+        const pathTextarea = document.getElementById('pathData');
+        const convertBtn = document.getElementById('convertAction');
+        const clearBtn = document.getElementById('clearFields');
+        const exampleBtn = document.getElementById('loadExample');
+        const copyBtn = document.getElementById('copySvgBtn');
+        const downloadBtn = document.getElementById('downloadSvgBtn');
+        const statusDiv = document.getElementById('liveStatus');
+        const finalCodeSpan = document.getElementById('finalSvgCode');
+        const previewSvg = document.getElementById('dynamicPreview');
+
+        // --- pequenas funções auxiliares
+        function setStatusMessage(msg, isError = false, isSuccess = false) {
+            statusDiv.innerHTML = msg;
+            statusDiv.classList.remove('status-error', 'status-success');
+            if (isError) statusDiv.classList.add('status-error');
+            if (isSuccess) statusDiv.classList.add('status-success');
+            // se não for erro nem sucesso, mantém classe neutra
+        }
+
+        // validação simples mas eficaz: checa se o path tem comandos básicos de desenho
+        function seemsValidPath(rawString) {
+            if (!rawString || typeof rawString !== 'string') return false;
+            const trimmed = rawString.trim();
+            if (trimmed.length === 0) return false;
+            // pelo menos uma letra de comando e sem tags HTML
+            const hasCommand = /[MLHVCSQTAZ]/i.test(trimmed);
+            const noTags = !trimmed.includes('<') && !trimmed.includes('>');
+            return hasCommand && noTags;
+        }
+
+        // gera o SVG completo no formato que o Scratch entende
+        function buildScratchSvg(pathDirty) {
+            const cleanPath = pathDirty.trim().replace(/\s+/g, ' ').replace(/,\s*/g, ',');
+            // cores inspiradas no Scratch: laranja vibrante + contorno marrom suave
+            const fillColor = "#FF8C42";
+            const strokeColor = "#4a2a14";
+            const strokeWidth = "1.5";
+            
+            const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <path d="${escapeXml(cleanPath)}" fill="${fillColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}" stroke-linejoin="round" stroke-linecap="round" />
+</svg>`;
+            return svgString;
+        }
+
+        function escapeXml(str) {
+            return str.replace(/[<>&'"]/g, function(match) {
+                if (match === '<') return '&lt;';
+                if (match === '>') return '&gt;';
+                if (match === '&') return '&amp;';
+                if (match === "'") return '&apos;';
+                if (match === '"') return '&quot;';
+                return match;
+            });
+        }
+
+        // mostra uma prévia bonitinha a partir do código SVG final
+        function updatePreviewFromSvg(svgCode) {
+            try {
+                // limpa o conteúdo atual do preview
+                while (previewSvg.firstChild) {
+                    previewSvg.removeChild(previewSvg.firstChild);
+                }
+                const parser = new DOMParser();
+                const parsedDoc = parser.parseFromString(svgCode, "image/svg+xml");
+                const svgRoot = parsedDoc.documentElement;
+                if (svgRoot && svgRoot.nodeName === 'svg' && !svgRoot.querySelector('parsererror')) {
+                    // copia atributos viewBox e dimensões pro preview
+                    const viewBoxAttr = svgRoot.getAttribute('viewBox') || '0 0 200 200';
+                    const widthAttr = svgRoot.getAttribute('width') || '200';
+                    const heightAttr = svgRoot.getAttribute('height') || '200';
+                    previewSvg.setAttribute('viewBox', viewBoxAttr);
+                    previewSvg.setAttribute('width', widthAttr);
+                    previewSvg.setAttribute('height', heightAttr);
+                    // copia todos os filhos do svr parseado (normalmente um path)
+                    for (let i = 0; i < svgRoot.children.length; i++) {
+                        const child = svgRoot.children[i];
+                        previewSvg.appendChild(child.cloneNode(true));
+                    }
+                } else {
+                    throw new Error('falha no parse');
+                }
+            } catch (e) {
+                console.warn("preview error", e);
+                // fallback: mostrar mensagem amigável no preview
+                while (previewSvg.firstChild) previewSvg.removeChild(previewSvg.firstChild);
+                const fallbackRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                fallbackRect.setAttribute("width", "200");
+                fallbackRect.setAttribute("height", "200");
+                fallbackRect.setAttribute("fill", "#f4ede5");
+                fallbackRect.setAttribute("rx", "12");
+                previewSvg.appendChild(fallbackRect);
+                const errText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                errText.setAttribute("x", "100");
+                errText.setAttribute("y", "110");
+                errText.setAttribute("text-anchor", "middle");
+                errText.setAttribute("fill", "#b86b2e");
+                errText.setAttribute("font-size", "12");
+                errText.textContent = "⚠️ preview indisponível";
+                previewSvg.appendChild(errText);
+                const errSub = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                errSub.setAttribute("x", "100");
+                errSub.setAttribute("y", "130");
+                errSub.setAttribute("text-anchor", "middle");
+                errSub.setAttribute("fill", "#9b7b62");
+                errSub.setAttribute("font-size", "10");
+                errSub.textContent = "mas o código está ok";
+                previewSvg.appendChild(errSub);
+            }
+        }
+
+        // reseta o preview para o estado neutro (sem path)
+        function resetPreviewToEmpty() {
+            while (previewSvg.firstChild) {
+                previewSvg.removeChild(previewSvg.firstChild);
+            }
+            const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            bgRect.setAttribute("width", "200");
+            bgRect.setAttribute("height", "200");
+            bgRect.setAttribute("fill", "#f9f5f0");
+            bgRect.setAttribute("rx", "16");
+            previewSvg.appendChild(bgRect);
+            
+            const line1 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            line1.setAttribute("x", "100");
+            line1.setAttribute("y", "105");
+            line1.setAttribute("text-anchor", "middle");
+            line1.setAttribute("fill", "#b2967c");
+            line1.setAttribute("font-size", "12");
+            line1.textContent = "nenhum path";
+            previewSvg.appendChild(line1);
+            
+            const line2 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            line2.setAttribute("x", "100");
+            line2.setAttribute("y", "125");
+            line2.setAttribute("text-anchor", "middle");
+            line2.setAttribute("fill", "#b2967c");
+            line2.setAttribute("font-size", "11");
+            line2.textContent = "preview aparecerá aqui";
+            previewSvg.appendChild(line2);
+            
+            previewSvg.setAttribute("viewBox", "0 0 200 200");
+            previewSvg.setAttribute("width", "200");
+            previewSvg.setAttribute("height", "200");
+        }
+
+        // função principal: pega o path, valida, gera SVG, atualiza tela
+        function performConversion() {
+            const rawPath = pathTextarea.value;
+            if (!rawPath.trim()) {
+                setStatusMessage("✏️ Ops, nenhum path foi colado. Cole um path ou use o exemplo.", false);
+                finalCodeSpan.innerText = "Nenhum SVG gerado ainda";
+                copyBtn.disabled = true;
+                downloadBtn.disabled = true;
+                resetPreviewToEmpty();
+                return;
+            }
+            
+            if (!seemsValidPath(rawPath)) {
+                setStatusMessage("❌ Path inválido! Certifique-se de colar apenas o conteúdo do d=\"...\" (ex: M10 10 L90 90). Evite tags HTML.", true);
+                finalCodeSpan.innerText = "Path inválido — corrija o formato";
+                copyBtn.disabled = true;
+                downloadBtn.disabled = true;
+                resetPreviewToEmpty();
+                return;
+            }
+            
+            try {
+                const generatedSvg = buildScratchSvg(rawPath);
+                finalCodeSpan.innerText = generatedSvg;
+                copyBtn.disabled = false;
+                downloadBtn.disabled = false;
+                setStatusMessage("✅ SVG gerado com sucesso! Agora você pode copiar ou baixar.", false, true);
+                updatePreviewFromSvg(generatedSvg);
+            } catch (err) {
+                setStatusMessage(`Erro na geração: ${err.message}`, true);
+                finalCodeSpan.innerText = "Erro ao processar o path";
+                copyBtn.disabled = true;
+                downloadBtn.disabled = true;
+                resetPreviewToEmpty();
+            }
+        }
+
+        // limpar tudo
+        function resetAll() {
+            pathTextarea.value = '';
+            finalCodeSpan.innerText = "Nenhum SVG gerado ainda";
+            copyBtn.disabled = true;
+            downloadBtn.disabled = true;
+            setStatusMessage("🧹 Tudo limpo. Cole um novo path e clique em converter.", false);
+            resetPreviewToEmpty();
+        }
+
+        // carregar exemplo bacana: estrela simétrica
+        function loadStarExample() {
+            const starPath = "M100 10 L 118 65 L 177 75 L 132 115 L 147 170 L 100 140 L 53 170 L 68 115 L 23 75 L 82 65 Z";
+            pathTextarea.value = starPath;
+            setStatusMessage("⭐ Exemplo estrela carregado! Clique em 'Converter para SVG' para ver o resultado.", false);
+            // não converte automático para dar chance de editar, mas já mostra dica
+            finalCodeSpan.innerText = "Nenhum SVG gerado ainda — clique em converter";
+            copyBtn.disabled = true;
+            downloadBtn.disabled = true;
+            resetPreviewToEmpty();
+        }
+
+        // copiar o código SVG para a área de transferência
+        async function copySvgToClipboard() {
+            const svgText = finalCodeSpan.innerText;
+            if (!svgText || svgText === "Nenhum SVG gerado ainda" || svgText === "Path inválido — corrija o formato" || svgText.includes("Erro")) {
+                setStatusMessage("📭 Não há SVG válido para copiar. Converta um path primeiro.", true);
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(svgText);
+                setStatusMessage("📋 Código SVG copiado! Agora é só colar no editor de texto ou importar no Scratch.", false, true);
+            } catch (err) {
+                // fallback manual
+                const textareaTemp = document.createElement('textarea');
+                textareaTemp.value = svgText;
+                document.body.appendChild(textareaTemp);
+                textareaTemp.select();
+                document.execCommand('copy');
+                document.body.removeChild(textareaTemp);
+                setStatusMessage("📋 Copiado (método alternativo). O SVG está na área de transferência.", false, true);
+            }
+        }
+
+        // baixar arquivo .svg
+        function downloadSvgFile() {
+            const svgContent = finalCodeSpan.innerText;
+            if (!svgContent || svgContent === "Nenhum SVG gerado ainda" || svgContent === "Path inválido — corrija o formato" || svgContent.includes("Erro")) {
+                setStatusMessage("⚠️ Gere um SVG válido primeiro antes de baixar.", true);
+                return;
+            }
+            const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+            const downloadUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = 'meu_fantasia_scratch.svg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(downloadUrl);
+            setStatusMessage("📁 Download concluído! Arraste o arquivo .svg direto para a área de fantasias do Scratch.", false, true);
+        }
+
+        // eventos e inicialização
+        convertBtn.addEventListener('click', performConversion);
+        clearBtn.addEventListener('click', resetAll);
+        exampleBtn.addEventListener('click', loadStarExample);
+        copyBtn.addEventListener('click', copySvgToClipboard);
+        downloadBtn.addEventListener('click', downloadSvgFile);
+        
+        // se o usuário aperta Enter no textarea? não, pra não confundir, mas mantemos simples
+        // estado inicial: preview neutro
+        resetPreviewToEmpty();
+        copyBtn.disabled = true;
+        downloadBtn.disabled = true;
+        finalCodeSpan.innerText = "Nenhum SVG gerado ainda";
+        setStatusMessage("💡 Cole um path válido e aperte 'Converter para SVG'.", false);
+    })();
+</script>
+</body>
+</html>
